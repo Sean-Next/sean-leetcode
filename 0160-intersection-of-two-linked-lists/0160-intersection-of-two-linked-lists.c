@@ -8,8 +8,8 @@
 typedef struct ListNode ListNode;
 struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *headB) 
 {
-    int lenA = 0;
-    int lenB = 0;
+    int sizeA = 0;
+    int sizeB = 0;
 
     ListNode* pcurA = headA;
     ListNode* pcurB = headB;
@@ -17,41 +17,38 @@ struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *he
     while (pcurA)
     {
         pcurA = pcurA->next;
-        lenA++;
+        sizeA++;
     }
-
     while (pcurB)
     {
         pcurB = pcurB->next;
-        lenB++;
+        sizeB++;
     }
 
-    int del = abs(lenA - lenB);
+    int diff = abs(sizeA - sizeB);
 
-    ListNode* more_list = headA;
-    ListNode* less_list = headB;
+    ListNode* LongList = headA;
+    ListNode* shortList = headB;
 
-    if (lenA < lenB)
+    if (sizeA < sizeB)
     {
-        more_list = headB;
-        less_list = headA;
+        LongList = headB;
+        shortList = headA;
     }
 
-    
-
-    while (del--)
+    while (diff--)
     {
-        more_list = more_list->next;
+        LongList = LongList->next;
     }
 
-    while (less_list)
+    while (LongList)
     {
-        if (more_list == less_list)
+        if (LongList == shortList)
         {
-            return more_list;
+            return LongList;
         }
-        more_list = more_list->next;
-        less_list = less_list->next;
+        LongList = LongList->next;
+        shortList = shortList->next;
     }
 
     return NULL;
