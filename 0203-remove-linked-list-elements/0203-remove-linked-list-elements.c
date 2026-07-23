@@ -8,13 +8,11 @@
 typedef struct ListNode ListNode;
 struct ListNode* removeElements(struct ListNode* head, int val) 
 {
-    ListNode* newhead = (ListNode*)malloc(sizeof(ListNode));
-    ListNode* newtail = newhead;
-    newhead->next = NULL;
-
+    ListNode* guard = (ListNode*)malloc(sizeof(ListNode));
+    ListNode* newtail = guard;
     ListNode* pcur = head;
 
-    while (pcur)
+    while (pcur != NULL)
     {
         if (pcur->val != val)
         {
@@ -23,7 +21,7 @@ struct ListNode* removeElements(struct ListNode* head, int val)
         }
         pcur = pcur->next;
     }
-    newtail->next = NULL;
 
-    return newhead->next;
+    newtail->next = NULL;
+    return guard->next;
 }
