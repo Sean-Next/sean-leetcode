@@ -5,12 +5,11 @@
  *     struct ListNode *next;
  * };
  */
-typedef struct ListNode ListNode;
+typedef  struct ListNode ListNode;
 struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2) 
 {
-    ListNode* newhead = (ListNode*)malloc(sizeof(ListNode));
-    ListNode* newtail = newhead;
-    newhead->next = NULL;
+    ListNode* guard = (ListNode*)malloc(sizeof(ListNode));
+    ListNode* pcur = guard;
 
     ListNode* pcur1 = list1;
     ListNode* pcur2 = list2;
@@ -19,25 +18,25 @@ struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2)
     {
         if (pcur1->val <= pcur2->val)
         {
-            newtail->next = pcur1;
+            pcur->next = pcur1;
             pcur1 = pcur1->next;
         }
         else
         {
-            newtail->next = pcur2;
+            pcur->next = pcur2;
             pcur2 = pcur2->next;
         }
-        newtail = newtail->next;
+        pcur = pcur->next;
     }
 
-    if (pcur1)
+    if (pcur1 == NULL)
     {
-        newtail->next = pcur1;
+        pcur->next = pcur2;
     }
     else
     {
-        newtail->next = pcur2;
+        pcur->next = pcur1;
     }
 
-    return newhead->next;
+    return guard->next;
 }
