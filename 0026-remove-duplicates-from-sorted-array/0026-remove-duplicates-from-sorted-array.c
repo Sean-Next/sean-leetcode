@@ -5,7 +5,7 @@ int removeDuplicates(int* nums, int numsSize)
 
     while (b < numsSize)
     {
-        if (nums[a] != nums[b])
+        if (nums[b] != nums[a])
         {
             nums[++a] = nums[b];
         }
