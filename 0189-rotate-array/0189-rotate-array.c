@@ -1,10 +1,10 @@
-void reverse(int* nums, int left, int right)
+void reverse(int* arr, int left, int right)
 {
-    while (left < right)
+    while (left <= right)
     {
-        int tmp = nums[left];
-        nums[left++] = nums[right];
-        nums[right--] = tmp;
+        int temp = arr[left];
+        arr[left++] = arr[right];
+        arr[right--] = temp; 
     }
 
     return;
