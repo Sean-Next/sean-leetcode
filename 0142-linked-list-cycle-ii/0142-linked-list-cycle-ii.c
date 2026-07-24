@@ -20,14 +20,15 @@ struct ListNode *detectCycle(struct ListNode *head)
         {
             ListNode* pcur = head;
 
-            while (pcur != fast)
+            while (fast != pcur)
             {
-                pcur = pcur->next;
                 fast = fast->next;
+                pcur = pcur->next;
             }
 
             return fast;
         }
     }
+
     return NULL;
 }
