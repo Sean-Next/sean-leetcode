@@ -6,7 +6,7 @@
  * };
  */
 typedef struct ListNode ListNode;
-bool hasCycle(struct ListNode *head) 
+bool hasCycle(struct ListNode *head)  
 {
     ListNode* slow = head;
     ListNode* fast = head;
