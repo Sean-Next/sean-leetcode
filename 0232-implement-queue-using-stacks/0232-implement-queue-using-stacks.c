@@ -1,18 +1,13 @@
-//栈的储存数据类型
+//存储数据类型---int
 typedef int STDataType;
 
+//栈-结构体
 typedef struct Stack
 {
-	STDataType* arr;//栈的地址
-	int top;//指向栈顶位置---有效数据个数
+	STDataType* arr;//栈地址
+	int top;//有效数据个数---栈顶位置
 	int capacity;//空间大小
 }ST;
-
-//判断栈是否为空
-bool STEmpty(ST* ps)
-{
-	return ps->top == 0;
-}
 
 //初始化栈
 void STInit(ST* ps)
@@ -25,18 +20,27 @@ void STInit(ST* ps)
 	return;
 }
 
-//销毁栈
-void STDesTroy(ST* ps)
+//打印栈的所有元素
+void STPrint(ST* ps)
 {
 	assert(ps);
 
-	//销毁
-	free(ps->arr);
-	//初始化
-	ps->arr = NULL;
-	ps->top = ps->capacity = 0;
+	//遍历打印
+	for (int i = 0; i < ps->top; i++)
+	{
+		printf("%d ", ps->arr[i]);
+	}
+	printf("\n");
 
 	return;
+}
+
+//判断栈是否为空
+bool STEmpty(ST* ps)
+{
+	assert(ps);
+
+	return ps->top == 0;
 }
 
 //在栈的顶部放入元素
@@ -44,6 +48,7 @@ void STPush(ST* ps, STDataType x)
 {
 	assert(ps);
 
+	//空间不足，申请空间
 	if (ps->top == ps->capacity)
 	{
 		//2倍增容
@@ -73,13 +78,14 @@ STDataType STTop(ST* ps)
 {
 	assert(ps && !STEmpty(ps));
 
+	//返回数组尾部元素
 	return ps->arr[ps->top - 1];
 }
 
 //在栈的顶部删除元素
 void STPop(ST* ps)
 {
-	assert(!STEmpty(ps));
+	assert(ps && !STEmpty(ps));
 
 	ps->top--;
 
@@ -89,28 +95,49 @@ void STPop(ST* ps)
 //获取栈的有效元素个数
 int STSize(ST* ps)
 {
+	assert(ps);
+
 	return ps->top;
 }
 
-
-typedef struct 
+//销毁栈
+void STDesTroy(ST* ps)
 {
-    ST push;
-    ST pop;
+	assert(ps);
+
+	//销毁
+	free(ps->arr);
+	ps->arr = NULL;
+	ps->top = ps->capacity = 0;
+
+	return;
+}
+
+
+typedef struct MyQueue
+{
+   ST push;
+   ST pop;
+
 } MyQueue;
 
 
 MyQueue* myQueueCreate() 
 {
-    MyQueue* qu = (MyQueue*)malloc(sizeof(MyQueue));
+    MyQueue* pq = (MyQueue*)malloc(sizeof(MyQueue));
 
-    STInit(&qu->push);
-    STInit(&qu->pop);
+    if (pq == NULL)
+    {
+        exit(1);
+    }
 
-    return qu;
+    STInit(&pq->push);
+    STInit(&pq->pop);
+
+    return pq;
 }
 
-void myQueuePush(MyQueue* obj, int x) 
+void myQueuePush(MyQueue* obj, int x)
 {
     STPush(&obj->push, x);
 
@@ -123,10 +150,12 @@ int myQueuePop(MyQueue* obj)
     {
         while (!STEmpty(&obj->push))
         {
-            STPush(&obj->pop, STTop(&obj->push));
+            int top = STTop(&obj->push);
             STPop(&obj->push);
+            STPush(&obj->pop, top);
         }
     }
+
     int top = STTop(&obj->pop);
     STPop(&obj->pop);
 
@@ -139,10 +168,12 @@ int myQueuePeek(MyQueue* obj)
     {
         while (!STEmpty(&obj->push))
         {
-            STPush(&obj->pop, STTop(&obj->push));
+            int top = STTop(&obj->push);
             STPop(&obj->push);
+            STPush(&obj->pop, top);
         }
     }
+    
     int top = STTop(&obj->pop);
 
     return top;
