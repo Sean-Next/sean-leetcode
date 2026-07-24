@@ -1,10 +1,11 @@
-//栈的储存数据类型
+//存储数据类型---int
 typedef char STDataType;
 
+//栈-结构体
 typedef struct Stack
 {
-	STDataType* arr;//栈的地址
-	int top;//指向栈顶位置---有效数据个数
+	STDataType* arr;//栈地址
+	int top;//有效数据个数---栈顶位置
 	int capacity;//空间大小
 }ST;
 
@@ -19,20 +20,27 @@ void STInit(ST* ps)
 	return;
 }
 
-//销毁栈
-void STDesTroy(ST* ps)
+//打印栈的所有元素
+void STPrint(ST* ps)
 {
 	assert(ps);
 
-	if (ps != NULL)
+	//遍历打印
+	for (int i = 0; i < ps->top; i++)
 	{
-		free(ps->arr);
+		printf("%d ", ps->arr[i]);
 	}
-
-	ps->arr = NULL;
-	ps->top = ps->capacity = 0;
+	printf("\n");
 
 	return;
+}
+
+//判断栈是否为空
+bool STEmpty(ST* ps)
+{
+	assert(ps);
+
+	return ps->top == 0;
 }
 
 //在栈的顶部放入元素
@@ -40,6 +48,7 @@ void STPush(ST* ps, STDataType x)
 {
 	assert(ps);
 
+	//空间不足，申请空间
 	if (ps->top == ps->capacity)
 	{
 		//2倍增容
@@ -64,24 +73,19 @@ void STPush(ST* ps, STDataType x)
 	return;
 }
 
-//判断栈是否为空
-bool STEmpty(ST* ps)
-{
-	return ps->top == 0;
-}
-
 //获取栈的顶部元素
 STDataType STTop(ST* ps)
 {
 	assert(ps && !STEmpty(ps));
 
+	//返回数组尾部元素
 	return ps->arr[ps->top - 1];
 }
 
 //在栈的顶部删除元素
 void STPop(ST* ps)
 {
-	assert(!STEmpty(ps));
+	assert(ps && !STEmpty(ps));
 
 	ps->top--;
 
@@ -91,21 +95,36 @@ void STPop(ST* ps)
 //获取栈的有效元素个数
 int STSize(ST* ps)
 {
+	assert(ps);
+
 	return ps->top;
 }
+
+//销毁栈
+void STDesTroy(ST* ps)
+{
+	assert(ps);
+
+	//销毁
+	free(ps->arr);
+	ps->arr = NULL;
+	ps->top = ps->capacity = 0;
+
+	return;
+}
+
 
 bool isValid(char* s) 
 {
     ST st;
     STInit(&st);
 
-    char* p = s;
-
-    while (*p)
+    while (*s)
     {
-        if (*p == '(' || *p == '[' || *p == '{')
+        if (*s == '(' || *s == '[' || *s == '{')
         {
-            STPush(&st, *p);
+            STPush(&st, *s);
+            s++;
         }
         else
         {
@@ -113,19 +132,23 @@ bool isValid(char* s)
             {
                 return false;
             }
-            
-            int top = STTop(&st);
-
-            if ((*p == ')' && top == '(') || (*p == ']' && top == '[') || (*p == '}' && top == '{'))
-            {
-                STPop(&st);
-            }
             else
             {
-                return false;
+                char top = STTop(&st);
+
+                if (top == '(' && *s == ')' || top == '[' && *s == ']' || top == '{' && *s == '}')
+                {   
+                    STPop(&st);
+                    s++;
+                }
+                else
+                {
+                    return false;
+                }
+            
             }
         }
-        p++;
+
     }
 
     if (STEmpty(&st))
@@ -136,4 +159,5 @@ bool isValid(char* s)
     {
         return false;
     }
+
 }
