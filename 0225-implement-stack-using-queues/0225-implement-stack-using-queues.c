@@ -1,13 +1,14 @@
+//存储数据类型---int
 typedef int QDataType;
 
-//定义节点结构
+//节点-结构体
 typedef struct QueueNode
 {
 	QDataType data;
 	struct QueueNode* next;
 }QueueNode;
 
-//定义队列的结构
+//队列-结构体
 typedef struct Queue
 {
 	QueueNode* phead;//队列头节点
@@ -15,21 +16,42 @@ typedef struct Queue
 	int size;//有效数据个数
 }Queue;
 
-//判断队列是否为空
-bool QueueEmpty(Queue* pq)
-{
-	assert(pq);
-	return pq->phead == NULL;
-}
-
 //初始化队列
 void QueueInit(Queue* pq)
 {
 	assert(pq);
+
 	pq->phead = pq->ptail = NULL;
 	pq->size = 0;
 
 	return;
+}
+
+//打印队列所有元素
+void QueuePrint(Queue* pq)
+{
+	assert(pq);
+
+	QueueNode* pcur = pq->phead;
+
+	//遍历打印
+	while (pcur)
+	{
+		printf("%d->", pcur->data);
+		pcur = pcur->next;
+	}
+	printf("NULL\n");
+
+	return;
+}
+
+//判断队列是否为空
+bool QueueEmpty(Queue* pq)
+{
+	assert(pq);
+
+	//判断头节点是否为空
+	return pq->phead == NULL;
 }
 
 //队列尾部放入元素
@@ -43,23 +65,30 @@ void QueuePush(Queue* pq, QDataType x)
 	//申请失败结束程序
 	if (newnode == NULL)
 	{
-		perror("malloc fail!");
+		perror("malloc fail !");
 		exit(1);
 	}
 
+	//新节点初始化
 	newnode->data = x;
 	newnode->next = NULL;
 
 	//判断是否是空队列
 	if (QueueEmpty(pq))
 	{
+		//更改头节点和尾节点
 		pq->phead = pq->ptail = newnode;
 	}
 	else
 	{
+		//连接新节点
 		pq->ptail->next = newnode;
+
+		//更改尾节点
 		pq->ptail = pq->ptail->next;
 	}
+
+	//元素数量增加
 	pq->size++;
 
 	return;
@@ -68,22 +97,26 @@ void QueuePush(Queue* pq, QDataType x)
 //队列头部删除元素
 void QueuePop(Queue* pq)
 {
-	assert(!QueueEmpty(pq));
+	assert(pq && !QueueEmpty(pq));
 
 	//判断是否为唯一节点
 	if (pq->phead == pq->ptail)
 	{
 		free(pq->phead);
+
+		//头节点与尾节点置空
 		pq->phead = pq->ptail = NULL;
 	}
 	else
 	{
 		//记录新头节点
-		QueueNode* next = pq->phead->next;
+		QueueNode* newphead = pq->phead->next;
 
 		free(pq->phead);
-		pq->phead = next;
+		pq->phead = newphead;
 	}
+
+	//元素数量减少
 	pq->size--;
 
 	return;
@@ -92,7 +125,7 @@ void QueuePop(Queue* pq)
 //队列头部获取元素
 QDataType QueueFront(Queue* pq)
 {
-	assert(!QueueEmpty(pq));
+	assert(pq && !QueueEmpty(pq));
 
 	return pq->phead->data;
 }
@@ -100,7 +133,7 @@ QDataType QueueFront(Queue* pq)
 //队列尾部获取元素
 QDataType QueueBack(Queue* pq)
 {
-	assert(!QueueEmpty(pq));
+	assert(pq && !QueueEmpty(pq));
 
 	return pq->ptail->data;
 }
@@ -129,106 +162,110 @@ void QueueDesTroy(Queue* pq)
 		pcur = next;
 	}
 
+	//队列初始化
 	pq->phead = pq->ptail = NULL;
+	pq->size = 0;
+
+	return;
 }
 
-typedef struct
+
+
+typedef struct 
 {
-	Queue q1;
-	Queue q2;
+    Queue q1;
+    Queue q2;
 } MyStack;
 
 
-MyStack* myStackCreate()
+MyStack* myStackCreate() 
 {
-	MyStack* st = (MyStack*)malloc(sizeof(MyStack));
+    MyStack* st = (MyStack*)malloc(sizeof( MyStack));
 
-	QueueInit(&st->q1);
-	QueueInit(&st->q2);
+    if (st == NULL)
+    {
+        exit(1);
+    }
 
-	return st;
+    QueueInit(&st->q1);
+    QueueInit(&st->q2);
+
+    return st;
 }
 
-void myStackPush(MyStack* obj, int x)
+void myStackPush(MyStack* obj, int x) 
 {
-	Queue* NoEmp = &obj->q1;
-	Queue* Emp = &obj->q2;
+    Queue* push = QueueEmpty(&obj->q1) ? &obj->q2 : &obj->q1;
 
-	if (QueueEmpty(NoEmp))
-	{
-		Emp = &obj->q1;
-		NoEmp = &obj->q2;
-	}
+    QueuePush(push, x);
 
-	QueuePush(NoEmp, x);
-
-	return;
+    return;
+    
 }
 
-int myStackPop(MyStack* obj)
+int myStackPop(MyStack* obj) 
 {
-	Queue* NoEmp = &obj->q1;
-	Queue* Emp = &obj->q2;
+    Queue* pop = QueueEmpty(&obj->q1) ? &obj->q2 : &obj->q1;
+    Queue* push = !QueueEmpty(&obj->q1) ? &obj->q2 : &obj->q1;
 
-	if (QueueEmpty(NoEmp))
-	{
-		Emp = &obj->q1;
-		NoEmp = &obj->q2;
-	}
+    while (pop->size > 1)
+    {
+        int front = QueueFront(pop);
+        QueuePop(pop);
+        QueuePush(push, front);
+    }
 
-	while (QueueSize(NoEmp) > 1)
-	{
-		QueuePush(Emp, QueueFront(NoEmp));
-		QueuePop(NoEmp);
-	}
-	int top = QueueFront(NoEmp);
-	QueuePop(NoEmp);
+    int top = QueueFront(pop);
+    QueuePop(pop);
 
-	return top;
+    return top;
 }
 
-int myStackTop(MyStack* obj)
+int myStackTop(MyStack* obj) 
 {
-	Queue* NoEmp = &obj->q1;
-	Queue* Emp = &obj->q2;
+    Queue* pop = QueueEmpty(&obj->q1) ? &obj->q2 : &obj->q1;
+    Queue* push = !QueueEmpty(&obj->q1) ? &obj->q2 : &obj->q1;
 
-	if (QueueEmpty(NoEmp))
-	{
-		Emp = &obj->q1;
-		NoEmp = &obj->q2;
-	}
+    while (pop->size > 1)
+    {
+        int front = QueueFront(pop);
+        QueuePop(pop);
+        QueuePush(push, front);
+    }
 
-	int top = QueueBack(NoEmp);
+    int top = QueueFront(pop);
+    QueuePop(pop);
+    QueuePush(push, top);
 
-	return top;
+    return top;
 }
 
-bool myStackEmpty(MyStack* obj)
+bool myStackEmpty(MyStack* obj) 
 {
-	return QueueEmpty(&obj->q1) && QueueEmpty(&obj->q2);
+    return QueueEmpty(&obj->q1) && QueueEmpty(&obj->q2);
 }
 
-void myStackFree(MyStack* obj)
+void myStackFree(MyStack* obj) 
 {
-	QueueDesTroy(&obj->q1);
-	QueueDesTroy(&obj->q2);
+    QueueDesTroy(&obj->q1);
+    QueueDesTroy(&obj->q2);
 
-	free(obj);
-	obj = NULL;
+    free(obj);
+    obj = NULL;
 
-	return;
+    return;
 }
 
 /**
  * Your MyStack struct will be instantiated and called as such:
  * MyStack* obj = myStackCreate();
  * myStackPush(obj, x);
-
+ 
  * int param_2 = myStackPop(obj);
-
+ 
  * int param_3 = myStackTop(obj);
-
+ 
  * bool param_4 = myStackEmpty(obj);
-
+ 
  * myStackFree(obj);
 */
