@@ -1,65 +1,93 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *next;
+ *     struct Node *random;
+ * };
+ */
 
 typedef struct Node Node;
 
-void copynode(Node* head)
+Node* CreateNode(Node* node)
 {
-    Node* pcur = head;
+    Node* newnode = (Node*)malloc(sizeof(Node));
 
-    while (pcur)
+    if (newnode == NULL)
     {
-        Node* newnode = (Node*)malloc(sizeof(Node));
+        exit(1);
+    }
 
-        newnode->val = pcur->val;
-        newnode->next = pcur->next;
-        newnode->random = pcur->random;
+    newnode->val = node->val;
+    newnode->next = node->next;
+    newnode->random = NULL;
 
-        pcur->next = newnode;
-        pcur = newnode->next;
+    return newnode;
+}
+
+void CopyNode(Node* node)
+{
+    Node* copynode = node->next;
+
+    if (node->random)
+    {
+        copynode->random = node->random->next;
+    }
+    else
+    {
+        copynode->random = NULL;
     }
 
     return;
 }
 
-void copyrandom(Node* head)
+void LinkNode(Node* node)
 {
-    Node* pcur = head;
-   
-    while (pcur)
+    Node* copynode = node->next;
+
+    if (copynode->next)
     {
-        if (pcur->next->random)
-        {
-            pcur->next->random = pcur->next->random->next;
-        }
-        pcur = pcur->next->next;
+        copynode->next = copynode->next->next;
+    }
+    else
+    {
+       copynode->next = NULL;
     }
 
     return;
 }
 
-Node* creatnewnode(Node* head)
+
+Node* copyRandomList(Node* head) 
 {
-    Node* pcur = head;
-
-    Node* newhead = (Node*)malloc(sizeof(Node));
-    Node* newtail = newhead;
-    newhead->next = NULL;
-
-    while (pcur)
+    if (head == NULL)
     {
-        newtail->next = pcur->next;
-        newtail = newtail->next;
-        pcur = pcur->next->next;
+        return NULL;
     }
 
-    return newhead->next;
-}
+    Node* pcur1 = head;
+    Node* pcur2 = head;
+    Node* pcur3 = head;
 
+    while (pcur1 != NULL)
+    {
+        Node* next = pcur1->next;
+        pcur1->next = CreateNode(pcur1);
+        pcur1 = next;
+    }
 
-struct Node* copyRandomList(struct Node* head)
-{
-    copynode(head);
+    while (pcur2 != NULL)
+    {
+        CopyNode(pcur2);
+        pcur2 = pcur2->next->next;
+    }
 
-    copyrandom(head);
+    while (pcur3 != NULL)
+    {
+        Node* next = pcur3->next->next;
+        LinkNode(pcur3);
+        pcur3 = next;
+    }
 
-    return creatnewnode(head);
+    return head->next;
 }
