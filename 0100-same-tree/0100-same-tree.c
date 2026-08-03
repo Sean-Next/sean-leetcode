@@ -13,12 +13,7 @@ bool isSameTree(struct TreeNode* p, struct TreeNode* q)
         return true;
     }
 
-    if (p == NULL)
-    {
-        return false;
-    }
-
-    if (q == NULL)
+    if (p == NULL || q == NULL)
     {
         return false;
     }
