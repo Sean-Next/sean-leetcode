@@ -13,22 +13,14 @@ bool isUnivalTree(struct TreeNode* root)
         return true;
     }
 
-    int left, right;
-    left = right = root->val;
-
-    if (root->left)
+    if (root->left && root->left->val != root->val)
     {
-        left = root->left->val;
+        return false;
     }
-    if (root->right)
+    if (root->right && root->right->val != root->val)
     {
-        right = root->right->val;
+        return false;
     }
 
-    if (root->val == left && root->val == right)
-    {
-        return isUnivalTree(root->left) && isUnivalTree(root->right);
-    }
-
-    return false;
+    return isUnivalTree(root->left) && isUnivalTree(root->right);
 }
